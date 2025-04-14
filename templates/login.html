@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="auth-box">
+        <h2>Login</h2>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button id="login-btn">Login</button>
+        <p>Don't have an account? <a href="/signup">Sign up here</a></p>
+        <div id="error-message" class="error" style="display: none;"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="{{ url_for('static', filename='firebase-config.js') }}"></script>
+
+    <script>
+        // Configure for Replit's environment
+        const isReplit = window.location.hostname.includes('replit.com');
+        const cookieDomain = isReplit ? window.location.hostname : '';
+
+        document.getElementById('login-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('login-btn');
+            btn.disabled = true;
+            btn.textContent = 'Authenticating...';
+
+            try {
+                // 1. Firebase authentication
+                const userCredential = await firebase.auth().signInWithEmailAndPassword(
+                    document.getElementById('email').value,
+                    document.getElementById('password').value
+                );
+
+                // 2. Get fresh token
+                const idToken = await userCredential.user.getIdToken(true);
+
+                // 3. Set cookie with Replit-compatible settings
+                const cookieSettings = [
+                    `token=${idToken}`,
+                    'path=/',
+                    'max-age=3600',
+                    'SameSite=None',
+                    'Secure=true',
+                    cookieDomain ? `domain=${cookieDomain}` : ''
+                ].filter(Boolean).join('; ');
+
+                document.cookie = cookieSettings;
+
+                // 4. Verify cookie is set
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+                // 5. Force redirect with cache-buster
+                window.location.href = `/dashboard?t=${Date.now()}`;
+
+            } catch (error) {
+                document.getElementById('error-message').textContent = error.message;
+                document.getElementById('error-message').style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Login';
+                console.error('Login error:', error);
+            }
+        });
+
+        // Auto-redirect if already authenticated
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user && !window.location.pathname.includes('login')) {
+                window.location.href = `/dashboard?t=${Date.now()}`;
+            }
+        });
+    </script>
+</body>
+</html>

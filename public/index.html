@@ -1,0 +1,82 @@
+// ... (previous code remains the same until the placeOrder function)
+
+async function placeOrder() {
+    if (!currentOrder.file || !currentOrder.type) return;
+
+    const formData = new FormData();
+    formData.append('file', currentOrder.file);
+    formData.append('type', currentOrder.type);
+
+    try {
+        const response = await fetch('/api/orders', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Update UI with new order
+            orders.unshift(result.order);
+            renderOrders();
+
+            successAlert.classList.remove('hidden');
+            setTimeout(() => successAlert.classList.add('hidden'), 5000);
+
+            resetOrderForm();
+        } else {
+            alert('Order failed: ' + (result.error || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Order error:', error);
+        alert('Failed to submit order');
+    }
+}
+
+// Load orders from server on startup
+async function loadOrders() {
+    try {
+        const response = await fetch('/api/orders');
+        const data = await response.json();
+        orders = data.map(order => ({
+            id: order.OrderID,
+            fileName: order.FileName,
+            pages: order.Pages,
+            type: order.Type,
+            date: new Date(order.Date).toLocaleDateString(),
+            status: 'completed'
+        }));
+        renderOrders();
+    } catch (error) {
+        console.error('Failed to load orders:', error);
+    }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    loadOrders();
+    initDashboard();
+});
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MVP Services</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Main content will be loaded here -->
+    </div>
+
+    <script>
+        // Redirect to dashboard
+        window.location.href = '/templates/dashboard.html';
+
+        // OR better yet - use this if using Node.js server:
+        // fetch('/dashboard')
+        //   .then(response => response.text())
+        //   .then(html => document.getElementById('app').innerHTML = html);
+    </script>
+</body>
+</html>

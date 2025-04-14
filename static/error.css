@@ -1,0 +1,12 @@
+.error-message {
+  color: var(--error);
+  padding: 1rem;
+  background-color: #ffebee;
+  border-radius: 4px;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.error-message::before {
+  content: "⚠️ ";
+}

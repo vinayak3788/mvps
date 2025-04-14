@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Dashboard - MVP Services</title>
+        <style>
+            :root {
+                --primary: #1a73e8;
+                --primary-hover: #1765cc;
+                --secondary: #f1f3f4;
+                --text-main: #202124;
+                --text-secondary: #5f6368;
+                --border: #dadce0;
+                --error: #d32f2f;
+                --success: #388e3c;
+                --bg: #f8f9fa;
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+                font-family: "Google Sans", Roboto, Arial, sans-serif;
+            }
+
+            body {
+                background-color: var(--bg);
+                min-height: 100vh;
+            }
+
+            .container {
+                display: flex;
+                min-height: 100vh;
+            }
+
+            .sidebar {
+                width: 250px;
+                background: white;
+                box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3);
+                padding: 20px 0;
+            }
+
+            .sidebar-header {
+                padding: 0 20px 20px;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .sidebar-title {
+                color: var(--text-main);
+                font-size: 18px;
+                font-weight: 500;
+            }
+
+            .sidebar-menu {
+                padding: 20px 0;
+            }
+
+            .menu-item {
+                padding: 12px 20px;
+                cursor: pointer;
+                color: var(--text-secondary);
+                display: flex;
+                align-items: center;
+                transition: all 0.2s;
+            }
+
+            .menu-item.active {
+                color: var(--primary);
+                background-color: var(--secondary);
+                border-left: 3px solid var(--primary);
+            }
+
+            .menu-item:hover {
+                background-color: var(--secondary);
+            }
+
+            .menu-icon {
+                margin-right: 12px;
+                font-size: 20px;
+            }
+
+            .main-content {
+                flex: 1;
+                padding: 30px;
+            }
+
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 30px;
+            }
+
+            .page-title {
+                color: var(--text-main);
+                font-size: 24px;
+                font-weight: 400;
+            }
+
+            .user-info {
+                display: flex;
+                align-items: center;
+            }
+
+            .user-avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background-color: var(--primary);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 10px;
+                font-weight: 500;
+            }
+
+            .user-name {
+                color: var(--text-main);
+                font-weight: 500;
+            }
+
+            .card {
+                background: white;
+                border-radius: 8px;
+                box-shadow:
+                    0 1px 2px 0 rgba(60, 64, 67, 0.3),
+                    0 1px 3px 1px rgba(60, 64, 67, 0.15);
+                padding: 24px;
+                margin-bottom: 24px;
+            }
+
+            .card-title {
+                color: var(--text-main);
+                font-size: 18px;
+                font-weight: 500;
+                margin-bottom: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .form-label {
+                display: block;
+                margin-bottom: 8px;
+                color: var(--text-main);
+                font-weight: 500;
+            }
+
+            .file-upload {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 40px 20px;
+                border: 2px dashed var(--border);
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.2s;
+                margin-bottom: 20px;
+                position: relative;
+            }
+
+            .file-upload:hover {
+                border-color: var(--primary);
+            }
+
+            .file-upload-icon {
+                font-size: 48px;
+                color: var(--primary);
+                margin-bottom: 16px;
+            }
+
+            .file-upload-text {
+                color: var(--text-secondary);
+                text-align: center;
+                margin-bottom: 8px;
+            }
+
+            .file-upload-hint {
+                color: var(--text-secondary);
+                font-size: 14px;
+            }
+
+            .file-info {
+                display: none;
+                margin-top: 20px;
+                padding: 16px;
+                background-color: var(--secondary);
+                border-radius: 8px;
+            }
+
+            .file-name {
+                font-weight: 500;
+                margin-bottom: 8px;
+            }
+
+            .file-details {
+                color: var(--text-secondary);
+                font-size: 14px;
+            }
+
+            .print-options {
+                display: flex;
+                gap: 16px;
+                margin-top: 20px;
+            }
+
+            .print-option {
+                flex: 1;
+                padding: 16px;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.2s;
+                text-align: center;
+            }
+
+            .print-option.selected {
+                border-color: var(--primary);
+                background-color: rgba(26, 115, 232, 0.1);
+            }
+
+            .print-option-icon {
+                font-size: 24px;
+                margin-bottom: 8px;
+            }
+
+            .print-option-title {
+                font-weight: 500;
+                margin-bottom: 4px;
+            }
+
+            .print-option-price {
+                color: var(--text-secondary);
+                font-size: 14px;
+            }
+
+            .btn {
+                padding: 12px 24px;
+                border-radius: 4px;
+                border: none;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .btn-primary {
+                background-color: var(--primary);
+                color: white;
+            }
+
+            .btn-primary:hover {
+                background-color: var(--primary-hover);
+            }
+
+            .btn-block {
+                display: block;
+                width: 100%;
+            }
+
+            .orders-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .orders-table th,
+            .orders-table td {
+                padding: 12px 16px;
+                text-align: left;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .orders-table th {
+                color: var(--text-secondary);
+                font-weight: 500;
+                font-size: 14px;
+            }
+
+            .orders-table td {
+                color: var(--text-main);
+            }
+
+            .status-badge {
+                display: inline-block;
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 12px;
+                font-weight: 500;
+            }
+
+            .status-pending {
+                background-color: #fff3e0;
+                color: #e65100;
+            }
+
+            .status-completed {
+                background-color: #e8f5e9;
+                color: var(--success);
+            }
+
+            .status-processing {
+                background-color: #e3f2fd;
+                color: var(--primary);
+            }
+
+            .hidden {
+                display: none;
+            }
+
+            .alert {
+                padding: 12px 16px;
+                border-radius: 4px;
+                margin-bottom: 20px;
+            }
+
+            .alert-success {
+                background-color: #e8f5e9;
+                color: var(--success);
+            }
+        </style>
+        <link
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+            rel="stylesheet"
+        />
+    </head>
+    <body>
+        <div class="container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h2 class="sidebar-title">MVP Services - Print form</h2>
+                </div>
+                <div class="sidebar-menu">
+                    <div class="menu-item active" data-section="new-order">
+                        <span class="material-icons menu-icon">add_circle</span>
+                        <span>New Order</span>
+                    </div>
+                    <div class="menu-item" data-section="old-orders">
+                        <span class="material-icons menu-icon">history</span>
+                        <span>Old Orders</span>
+                    </div>
+                    <div class="menu-item" id="logout-btn">
+                        <span class="material-icons menu-icon">logout</span>
+                        <span>Logout</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="header">
+                    <h1 class="page-title" id="page-title">New Print Order</h1>
+                    <div class="user-info">
+                        <div class="user-avatar" id="user-avatar">U</div>
+                        <div class="user-name" id="user-email">
+                            user@example.com
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Order Section -->
+                <div id="new-order-section">
+                    <div class="card">
+                        <h2 class="card-title">Upload Your Document</h2>
+
+                        <div id="upload-area" class="file-upload">
+                            <span class="material-icons file-upload-icon"
+                                >cloud_upload</span
+                            >
+                            <div class="file-upload-text">
+                                Click to upload or drag and drop
+                            </div>
+                            <div class="file-upload-hint">
+                                Word, PDF, or Image files (Max 10MB)
+                            </div>
+                            <input
+                                type="file"
+                                id="file-input"
+                                accept=".doc,.docx,.pdf,.jpg,.jpeg,.png"
+                                style="display: none"
+                            />
+                        </div>
+
+                        <div id="file-info" class="file-info">
+                            <div class="file-name" id="file-name">
+                                Document.pdf
+                            </div>
+                            <div class="file-details">
+                                <span id="file-size">2.4 MB</span> •
+                                <span id="page-count">12 pages</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Print Options</label>
+                            <div class="print-options">
+                                <div class="print-option" data-type="color">
+                                    <span
+                                        class="material-icons print-option-icon"
+                                        >color_lens</span
+                                    >
+                                    <div class="print-option-title">
+                                        Color Print
+                                    </div>
+                                    <div class="print-option-price">
+                                        ₹5 per page
+                                    </div>
+                                </div>
+                                <div class="print-option" data-type="bw">
+                                    <span
+                                        class="material-icons print-option-icon"
+                                        >invert_colors_off</span
+                                    >
+                                    <div class="print-option-title">
+                                        Black & White
+                                    </div>
+                                    <div class="print-option-price">
+                                        ₹2 per page
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button
+                            id="submit-order"
+                            class="btn btn-primary btn-block"
+                            disabled
+                        >
+                            Place Order
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Old Orders Section -->
+                <div id="old-orders-section" class="hidden">
+                    <div class="card">
+                        <h2 class="card-title">Your Orders</h2>
+
+                        <div id="orders-table-container">
+                            <table class="orders-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Document</th>
+                                        <th>Pages</th>
+                                        <th>Type</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orders-table-body">
+                                    <!-- Orders will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Success Alert -->
+                <div id="success-alert" class="alert alert-success hidden">
+                    Order placed successfully! Your document is being processed.
+                </div>
+            </div>
+        </div>
+
+        <!-- PDF.js for page count extraction -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+        <script>
+            // Set PDF.js worker path
+            pdfjsLib = window['pdfjs-dist/build/pdf'];
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+
+            // Mock user data (in a real app, this would come from your auth system)
+            const user = {
+                name: "John Doe",
+                email: "john@example.com"
+            };
+
+            // Orders data stored in localStorage
+            let orders = JSON.parse(localStorage.getItem('printOrders')) || [];
+
+            // DOM elements
+            const userAvatar = document.getElementById('user-avatar');
+            const userEmail = document.getElementById('user-email');
+            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('upload-area');
+            const fileInfo = document.getElementById('file-info');
+            const fileName = document.getElementById('file-name');
+            const fileSize = document.getElementById('file-size');
+            const pageCount = document.getElementById('page-count');
+            const printOptions = document.querySelectorAll('.print-option');
+            const submitOrderBtn = document.getElementById('submit-order');
+            const menuItems = document.querySelectorAll('.menu-item');
+            const sections = {
+                'new-order': document.getElementById('new-order-section'),
+                'old-orders': document.getElementById('old-orders-section')
+            };
+            const pageTitle = document.getElementById('page-title');
+            const ordersTableBody = document.getElementById('orders-table-body');
+            const successAlert = document.getElementById('success-alert');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            // Current order data
+            let currentOrder = {
+                file: null,
+                pages: 0,
+                type: null
+            };
+
+            // Initialize the dashboard
+            function initDashboard() {
+                // Set user info
+                userAvatar.textContent = user.name.charAt(0).toUpperCase();
+                userEmail.textContent = user.email;
+
+                // Load orders
+                renderOrders();
+
+                // Setup event listeners
+                setupEventListeners();
+            }
+
+            // Setup all event listeners
+            function setupEventListeners() {
+                // File upload
+                uploadArea.addEventListener('click', () => fileInput.click());
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    uploadArea.style.borderColor = 'var(--primary)';
+                    uploadArea.style.backgroundColor = 'rgba(26, 115, 232, 0.1)';
+                });
+                uploadArea.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    uploadArea.style.borderColor = 'var(--border)';
+                    uploadArea.style.backgroundColor = 'transparent';
+                });
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    uploadArea.style.borderColor = 'var(--border)';
+                    uploadArea.style.backgroundColor = 'transparent';
+
+                    if (e.dataTransfer.files.length) {
+                        handleFileSelect(e.dataTransfer.files[0]);
+                    }
+                });
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length) {
+                        handleFileSelect(e.target.files[0]);
+                    }
+                });
+
+                // Print options selection
+                printOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        printOptions.forEach(opt => opt.classList.remove('selected'));
+                        option.classList.add('selected');
+                        currentOrder.type = option.dataset.type;
+                        updateSubmitButton();
+                    });
+                });
+
+                // Menu navigation
+                menuItems.forEach(item => {
+                    if (item.id !== 'logout-btn') {
+                        item.addEventListener('click', () => {
+                            menuItems.forEach(i => i.classList.remove('active'));
+                            item.classList.add('active');
+                            const section = item.dataset.section;
+
+                            // Hide all sections
+                            Object.values(sections).forEach(sec => sec.classList.add('hidden'));
+
+                            // Show selected section
+                            sections[section].classList.remove('hidden');
+
+                            // Update page title
+                            pageTitle.textContent = section === 'new-order' ? 'New Print Order' : 'Your Orders';
+                        });
+                    }
+                });
+
+                // Submit order
+                submitOrderBtn.addEventListener('click', placeOrder);
+
+                // Logout
+                logoutBtn.addEventListener('click', () => {
+                    // Clear any user session data
+                    localStorage.removeItem('userSession');
+                    // Redirect to login page
+                    window.location.href = '/login';
+                });
+            }
+
+            // Handle file selection
+            async function handleFileSelect(file) {
+                // Check file type
+                const validTypes = ['application/pdf', 'application/msword',
+                                  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                                  'image/jpeg', 'image/png'];
+
+                const fileExt = file.name.split('.').pop().toLowerCase();
+                const validExts = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'];
+
+                if (!validTypes.includes(file.type) && !validExts.includes(fileExt)) {
+                    alert('Please upload a Word, PDF, or Image file only.');
+                    return;
+                }
+
+                // Check file size (max 10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('File size exceeds 10MB limit.');
+                    return;
+                }
+
+                currentOrder.file = file;
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+
+                // Get page count based on file type
+                if (file.type === 'application/pdf' || fileExt === 'pdf') {
+                    try {
+                        const arrayBuffer = await file.arrayBuffer();
+                        const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+                        currentOrder.pages = pdf.numPages;
+                        pageCount.textContent = `${currentOrder.pages} page${currentOrder.pages !== 1 ? 's' : ''}`;
+                    } catch (error) {
+                        console.error('Error reading PDF:', error);
+                        currentOrder.pages = 1; // Default to 1 page if we can't read it
+                        pageCount.textContent = '1 page';
+                    }
+                } else if (file.type.includes('image/') || ['jpg', 'jpeg', 'png'].includes(fileExt)) {
+                    currentOrder.pages = 1;
+                    pageCount.textContent = '1 page';
+                } else {
+                    // For Word docs, we'll just estimate 1 page per 500 words
+                    const text = await readFileAsText(file);
+                    const wordCount = text.split(/\s+/).length;
+                    currentOrder.pages = Math.max(1, Math.ceil(wordCount / 500));
+                    pageCount.textContent = `${currentOrder.pages} page${currentOrder.pages !== 1 ? 's' : ''}`;
+                }
+
+                // Show file info
+                fileInfo.style.display = 'block';
+                updateSubmitButton();
+            }
+
+            // Read file as text (for Word docs)
+            function readFileAsText(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = event => resolve(event.target.result);
+                    reader.onerror = error => reject(error);
+                    reader.readAsText(file);
+                });
+            }
+
+            // Format file size
+            // Format file size
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+            }
+
+            // Update submit button state
+            function updateSubmitButton() {
+                submitOrderBtn.disabled = !(currentOrder.file && currentOrder.type);
+            }
+
+            // Place order
+            function placeOrder() {
+                if (!currentOrder.file || !currentOrder.type) return;
+
+                // Create new order
+                const newOrder = {
+                    id: `ORD-${Math.floor(10000 + Math.random() * 90000)}`,
+                    fileName: currentOrder.file.name,
+                    pages: currentOrder.pages,
+                    type: currentOrder.type === 'color' ? 'Color' : 'Black & White',
+                    date: new Date().toLocaleDateString(),
+                    status: 'pending',
+                    timestamp: new Date().getTime()
+                };
+
+                // Add to orders array
+                orders.unshift(newOrder);
+
+                // Save to localStorage
+                localStorage.setItem('printOrders', JSON.stringify(orders));
+
+                // Render updated orders
+                renderOrders();
+
+                // Show success message
+                successAlert.classList.remove('hidden');
+                setTimeout(() => successAlert.classList.add('hidden'), 5000);
+
+                // Reset form
+                resetOrderForm();
+            }
+
+            // Reset order form
+            function resetOrderForm() {
+                currentOrder = {
+                    file: null,
+                    pages: 0,
+                    type: null
+                };
+                fileInput.value = '';
+                fileInfo.style.display = 'none';
+                printOptions.forEach(opt => opt.classList.remove('selected'));
+                submitOrderBtn.disabled = true;
+            }
+
+            // Render orders table
+            function renderOrders() {
+                if (orders.length === 0) {
+                    ordersTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No orders found</td></tr>';
+                    return;
+                }
+
+                // Sort orders by timestamp (newest first)
+                const sortedOrders = [...orders].sort((a, b) => b.timestamp - a.timestamp);
+
+                ordersTableBody.innerHTML = sortedOrders.map(order => `
+                    <tr>
+                        <td>${order.id}</td>
+                        <td>${order.fileName}</td>
+                        <td>${order.pages}</td>
+                        <td>${order.type}</td>
+                        <td>${order.date}</td>
+                        <td><span class="status-badge status-${order.status}">${
+                            order.status === 'completed' ? 'Completed' :
+                            order.status === 'processing' ? 'Processing' : 'Pending'
+                        }</span></td>
+                    </tr>
+                `).join('');
+            }
+
+            // Initialize the dashboard when DOM is loaded
+            document.addEventListener('DOMContentLoaded', initDashboard);
+        </script>
+    </body>
+</html>
